@@ -32,8 +32,15 @@ $('#go').on('click', function() {
 
 function process(time) {
 
-	var minsModifier = {
-			0: 'exactly ',
+	var leftoverMinutes = {
+			0: 'it\'s ',
+			1: 'just gone ',
+			2: 'after ',
+			3: 'nearly ',
+			4: 'almost '
+		},
+		minsModifier = {
+			0: ' ',
 			1: 'five ',
 			2: 'ten ',
 			3: 'a quarter ',
@@ -56,38 +63,33 @@ function process(time) {
 			11: 'eleven',
 			12: 'noon'
 		},
-		leftoverMinutes = {
-			0: 'it\'s ',
-			1: 'just gone ',
-			2: 'after ',
-			3: 'nearly ',
-			4: 'almost '
-		},
 		modifier = 'past ',
 		minIncrementor = 0;
 
-		if (time.minutes > 32) {
-			time.minutes = 60 - time.minutes;
-			modifier = 'to ';
-			incrementHour();
-			leftoverMinutes[5] = leftoverMinutes[1];
-			leftoverMinutes[1] = leftoverMinutes[4];
-			leftoverMinutes[4] = leftoverMinutes[5];
-			leftoverMinutes[5] = leftoverMinutes[2];
-			leftoverMinutes[2] = leftoverMinutes[3];
-			leftoverMinutes[3] = leftoverMinutes[5];
-			delete leftoverMinutes[5];
-		}
+	if (time.minutes > 32) {
+		time.minutes = 60 - time.minutes;
+		modifier = 'to ';
+		incrementHour();
+		leftoverMinutes[5] = leftoverMinutes[1];
+		leftoverMinutes[1] = leftoverMinutes[4];
+		leftoverMinutes[4] = leftoverMinutes[5];
+		leftoverMinutes[5] = leftoverMinutes[2];
+		leftoverMinutes[2] = leftoverMinutes[3];
+		leftoverMinutes[3] = leftoverMinutes[5];
+		delete leftoverMinutes[5];
+	}
 
-		if (time.minutes%5 > 2) {
-			minIncrementor = 1;
-		}
+	if (time.minutes % 5 > 2) {
+		minIncrementor = 1;
+	}
 
 	$('#output').text(
-		leftoverMinutes[time.minutes%5] + 
-		minsModifier[Math.floor(time.minutes/5) + minIncrementor] + 
-		(!!Math.floor(time.minutes/5) ? modifier : '') + 
-		hourModifier[time.hours===12?12:time.hours%12]
+		leftoverMinutes[time.minutes % 5] + 
+		minsModifier[Math.floor(time.minutes / 5) + minIncrementor] + 
+		((Math.floor(time.minutes / 5) + minIncrementor) % 3 ? 'minutes ' : '') +
+		(!!Math.floor(time.minutes / 5) ? modifier : '') + 
+		hourModifier[time.hours === 12 ? 12 : time.hours % 12] +
+		(!!(time.hours % 12) ? ' o\'clock' : '')
 	);
 }
 
